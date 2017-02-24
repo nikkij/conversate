@@ -4,9 +4,23 @@
           :resource-paths #{"resources"}
           :dependencies '[[org.clojure/clojure "1.7.0"]
                           [http-kit/http-kit "2.1.18"]])
-(require '[org.httpkit.server :refer [run-server]]
-         'conversate.core)
 
+(require '[org.httpkit.server :refer [run-server]]
+         'conversate.core
+         'conversate.scraper)
+
+(task-options!
+ pom {:project 'conversate
+      :version "0.0.1"}
+ jar {:main 'conversate.core}
+ aot {:namespace '#{conversate.core}})
+
+;; Trying to separate the app into a bunch of different areas
+;; Server - Webscraper - NLP Processor
+;; and create a seperate boot task for each of them
+;; Not sure how thats supposed to work in production...
+
+;; http-kit server and handler
 (defn handler
   [request]
   (prn request)
@@ -14,7 +28,7 @@
    :headers {}
    :body "Hello Conversate!"})
 
-(deftask start []
+(deftask start-server []
   (let [shutdown (promise)
          stop-server (run-server handler {:port 3000})]
     (do
@@ -27,12 +41,12 @@
       (println "listening on 3000")
       @shutdown)))
 
-(task-options!
- pom {:project 'conversate
-      :version "0.0.1"}
- jar {:main 'conversate.core}
- aot {:namespace '#{conversate.core}})
+;; Webscraper
+(deftask run-scraper []
+  (with-pass-thru _
+    (conversate.scraper/start)))
 
+;; unused bullshit below here?
 (deftask build []
   (comp (aot) (pom) (uber) (jar)))
 
@@ -40,5 +54,3 @@
   (with-pass-thru _
     (conversate.core/-main)))
 
-(defn -main [& args]
-  (run))

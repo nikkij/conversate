@@ -1,4 +1,4 @@
 (ns conversate.core)
 
-(defn -main []
+(defn -main [& args]
   (println "Hello Conversate"))

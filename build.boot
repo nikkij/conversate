@@ -1,11 +1,11 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[org.clojure/clojure "1.7.0"]
-                          [http-kit/http-kit "2.1.18"]]
-          :resource-paths #{"src"}
-          :source-paths #{"src/"})
+(set-env! :source-paths #{"src/clj"}
+          :resource-paths #{"resources"}
+          :dependencies '[[org.clojure/clojure "1.7.0"]
+                          [http-kit/http-kit "2.1.18"]])
 (require '[org.httpkit.server :refer [run-server]]
-         '[conversate.core])
+         'conversate.core)
 
 (defn handler
   [request]
@@ -16,7 +16,7 @@
 
 (deftask start []
   (let [shutdown (promise)
-        stop-server (run-server handler {:port 3000})]
+         stop-server (run-server handler {:port 3000})]
     (do
       (.addShutdownHook (.. Runtime getRuntime)
                         (Thread. (fn []

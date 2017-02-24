@@ -8,3 +8,10 @@ boot start
 ```
 
 Server will be running on localhost:3000
+
+## Running other tasks
+
+Run generic tasks with
+```
+boot run
+```
